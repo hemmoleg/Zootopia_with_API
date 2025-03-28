@@ -66,20 +66,23 @@ def write_html(html):
     with open('animal.html', "w") as handle:
         handle.write(html)
 
+    print("Website was successfully generated to the file animal.html")
+
 
 def main():
     #animal_data = load_data('animals_data.json')
 
+    input_animal = input("Enter a name of an animal: ")
+
     headers = {
         "X-API-Key": "hUouTCTIXM+qZpTsbpXYyQ==BDfi9hKtkTLwW1ZV"
     }
-    response = requests.get("https://api.api-ninjas.com/v1/animals?name=fox", headers=headers)
+    response = requests.get(f"https://api.api-ninjas.com/v1/animals?name={input_animal}", headers=headers)
     animal_data = response.json()
 
     html = load_html('animals_template.html')
 
     skin_types = get_skin_types(animal_data)
-    print(skin_types)
 
     print("Please select a skin type. Only animals with the skin type will be present in the html file.")
     print("Animals with no skin type attribute will not be present in the html.")
