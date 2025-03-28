@@ -1,4 +1,5 @@
 import json
+import requests
 
 def load_data(file_path):
   """ Loads a JSON file """
@@ -67,7 +68,14 @@ def write_html(html):
 
 
 def main():
-    animal_data = load_data('animals_data.json')
+    #animal_data = load_data('animals_data.json')
+
+    headers = {
+        "X-API-Key": "hUouTCTIXM+qZpTsbpXYyQ==BDfi9hKtkTLwW1ZV"
+    }
+    response = requests.get("https://api.api-ninjas.com/v1/animals?name=fox", headers=headers)
+    animal_data = response.json()
+
     html = load_html('animals_template.html')
 
     skin_types = get_skin_types(animal_data)
