@@ -1,5 +1,5 @@
 import json
-import requests
+import data_fetcher
 
 def load_data(file_path):
   """ Loads a JSON file """
@@ -62,6 +62,26 @@ def serialize_animal(animal_obj):
     return animal_data_string
 
 
+def get_skin_type_from_user(skin_types):
+    print("Please select a skin type. Only animals with the skin type will be present in the html file.")
+    print("Animals with no skin type attribute will not be present in the html.")
+
+    while True:
+        i = 1
+        for skin_type in skin_types:
+            print(f"{i}. {skin_type}")
+            i += 1
+
+        try:
+            selected_skin_type = int(
+                input("Please enter a number for the skin type you wish to be present in the html file: "))
+            break
+        except ValueError:
+            print("Please enter an integer value")
+
+    return selected_skin_type
+
+
 def write_html(html):
     with open('animal.html', "w") as handle:
         handle.write(html)
@@ -73,37 +93,20 @@ def main():
     #animal_data = load_data('animals_data.json')
 
     input_animal = input("Enter a name of an animal: ")
-
-    headers = {
-        "X-API-Key": "hUouTCTIXM+qZpTsbpXYyQ==BDfi9hKtkTLwW1ZV"
-    }
-    response = requests.get(f"https://api.api-ninjas.com/v1/animals?name={input_animal}", headers=headers)
-    animal_data = response.json()
-
-    html = load_html('animals_template.html')
+    animal_data = data_fetcher.fetch_data(input_animal)
 
     skin_types = get_skin_types(animal_data)
 
-    print("Please select a skin type. Only animals with the skin type will be present in the html file.")
-    print("Animals with no skin type attribute will not be present in the html.")
+    html = load_html('animals_template.html')
 
-    while True:
-        i = 1
-        for skin_type in skin_types:
-            print(f"{i}. {skin_type}")
-            i += 1
+    if len(skin_types) > 0:
+        skin_type = get_skin_type_from_user(skin_types)
+        animal_data_string = create_animal_data_html(animal_data, list(skin_types)[skin_type - 1])
+        html = str(html).replace("__REPLACE_ANIMALS_INFO__", animal_data_string)
+    else:
+        html = str(html).replace("__REPLACE_ANIMALS_INFO__", f"<h2>The animal '{input_animal}' doesn't exist.</h2>")
 
-        try:
-            selected_skin_type = int(input("Please enter a number for the skin type you wish to be present in the html file: "))
-            break
-        except ValueError:
-            print("Please enter an integer value")
-
-    animal_data_string = create_animal_data_html(animal_data, list(skin_types)[selected_skin_type - 1])
-    html = str(html).replace("__REPLACE_ANIMALS_INFO__", animal_data_string)
     write_html(html)
-
-    # print(html)
 
 
 if __name__ == '__main__':
