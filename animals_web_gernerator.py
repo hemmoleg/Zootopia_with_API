@@ -71,10 +71,14 @@ def get_skin_type_from_user(skin_types):
         for skin_type in skin_types:
             print(f"{i}. {skin_type}")
             i += 1
-
         try:
             selected_skin_type = int(
                 input("Please enter a number for the skin type you wish to be present in the html file: "))
+
+            if selected_skin_type not in range(len(skin_types)):
+                print(f"Please enter a number between 1 and {len(skin_types)}")
+                continue
+
             break
         except ValueError:
             print("Please enter an integer value")
